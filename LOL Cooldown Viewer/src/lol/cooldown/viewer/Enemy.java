@@ -171,8 +171,8 @@ public class Enemy {
         switch(i){
             case(0):
                 name  = c.getName();
-                if(name.equals("Rek'Sai"))
-                    name="RekSai";
+                if(name.equals("Rek'Sai")||name.equals("Kog'Maw"))
+                    name=name.replace("'", "");
                 else if(name.contains("'"))
                     name = name.substring(0,1) + (name.substring(1).toLowerCase().replaceAll("'", ""));
                 else if(name.contains("."))
