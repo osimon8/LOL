@@ -157,6 +157,7 @@ public class Enemy {
         g.drawString("W: " +df.format(wcd/((100.0+cdr)/100))+" seconds",x,y+320);
         g.drawString("E: " +df.format(ecd/((100.0+cdr)/100))+" seconds",x,y+340);
         g.drawString("R: " +df.format(rcd/((100.0+cdr)/100))+" seconds",x,y+360);
+        df.applyPattern("#");
         g.drawString(s1.getName()+": "+df.format(insight * s1.getCooldown().get(0))+" seconds",x,y+380);
         g.drawImage(s1Icon.getScaledInstance(30, 30, Image.SCALE_REPLICATE),x+125,y+355,null);
         g.drawString(s2.getName()+": "+df.format(insight * s2.getCooldown().get(0))+" seconds",x,y+400);
