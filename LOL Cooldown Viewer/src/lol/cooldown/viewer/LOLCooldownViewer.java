@@ -39,16 +39,17 @@ public class LOLCooldownViewer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        View v = new View();
-        JFrame f = new JFrame("LOL Cooldown Viewer");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.getContentPane().add(v);
-        //ImageIcon i = new ImageIcon("flash-icon.jpg");
         try{
-            f.setIconImage(ImageIO.read(LOLCooldownViewer.class.getResource("flash-icon.jpg")));
-        }catch(IOException e){System.out.println("no");}
-        f.pack();
-        f.setVisible(true);
+            View v = new View();
+            JFrame f = new JFrame("LOL Cooldown Viewer");
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.getContentPane().add(v);
+            //ImageIcon i = new ImageIcon("flash-icon.jpg");
+            try{
+                f.setIconImage(ImageIO.read(LOLCooldownViewer.class.getResource("flash-icon.jpg")));
+            }catch(IOException e){System.out.println("no");}
+            f.pack();
+            f.setVisible(true);
 //        try {
 //            RiotApi api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
 //            
@@ -85,6 +86,7 @@ public class LOLCooldownViewer {
 //            Logger.getLogger(LOLCooldownViewer.class.getName()).log(Level.SEVERE, null, ex);
 //            System.out.println("fail");
 //        }
+        }catch(RiotApiException ex){Logger.getLogger(LOLCooldownViewer.class.getName()).log(Level.SEVERE, null, ex);}
     }
     
 }

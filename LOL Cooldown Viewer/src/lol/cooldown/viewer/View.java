@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.rithms.riot.api.RiotApi;
@@ -33,8 +34,14 @@ public class View extends javax.swing.JPanel {
      */
     List<Enemy> enemies;
     boolean manual,ready;
-    public View() {
+    RiotApi api;
+    Map<String, Double> passiveCooldowns;
+    ChampionList champRaw;
+    public View() throws RiotApiException {
         initComponents();
+        api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
+        passiveCooldowns = assignCooldowns();
+        champRaw = api.getDataChampionList();
         enemies=null;
         manual=true;
         ready=false;
@@ -58,6 +65,7 @@ public class View extends javax.swing.JPanel {
         jTextField1 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
 
+        setBackground(new java.awt.Color(0, 41, 106));
         setPreferredSize(new java.awt.Dimension(1140, 510));
 
         jSlider1.setMaximum(45);
@@ -204,7 +212,7 @@ public class View extends javax.swing.JPanel {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 390, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 369, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -293,12 +301,11 @@ public class View extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            RiotApi api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
+            
             ready=false;
             Summoner summoner=null;
             System.out.println(jTextField1.getText());
             summoner = api.getSummonerByName(Region.NA, jTextField1.getText());
-            ChampionList champRaw = api.getDataChampionList();
             Map<String, Champion> champs = champRaw.getData();
             long id = summoner.getId();
             long enemyTeamId=0;
@@ -367,6 +374,28 @@ public class View extends javax.swing.JPanel {
             e.getSlider().setValue(0);
         }
         repaint();
+    }
+    
+    private Map<String, Double> assignCooldowns(){ 
+        Map<String, Double> list = new TreeMap<>(); 
+//    list.put(Aatrox, 225.0);
+//    list.put(Anivia, 240.0);
+//    list.put(Blitzcrank, 90.0);
+//    list.put(Evelynn, 
+//    list.put(Garen, 
+//    list.put(LeBlanc, 
+//    list.put(Lissandra, 18.0);
+//    list.put(Malphite,  
+//    list.put(Miss Fortune, 
+//    list.put(Nocturne,  
+//    list.put(Shen, 
+//    list.put(Teemo, 
+//    list.put(Vi, 
+//    list.put(Volibear, 
+//    list.put(Xerath, 
+//    list.put(Zac, 
+//    list.put(Ziggs,
+        return null;   
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

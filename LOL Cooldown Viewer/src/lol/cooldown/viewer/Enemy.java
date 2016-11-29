@@ -5,6 +5,7 @@
  */
 package lol.cooldown.viewer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -133,6 +134,7 @@ public class Enemy {
     }
     
     public void draw(Graphics g,int x, int y, int width, int height){
+        g.setColor(Color.WHITE);
         if(s.getValue()<(int)minCdr){
             s.setValue((int)minCdr);
             cdr=minCdr;
@@ -143,7 +145,7 @@ public class Enemy {
             g.drawImage(lIcon.getScaledInstance((int)(roc3*width),(int)(roc2*height),Image.SCALE_REPLICATE), x, y, null);
         }
         else
-            g.drawString("UNRANKED",x,y+100);  
+        g.drawString("UNRANKED",x,y+100);  
         g.drawImage(icon.getScaledInstance((int)(roc5*width),(int)(roc4*height),Image.SCALE_REPLICATE),x,y+110,null);
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
@@ -153,14 +155,14 @@ public class Enemy {
         double rcd = r.getCooldown().get(0).intValue(); 
         g.drawString(c.getName(),x,y+260);
         g.drawString("P: " + passive.getName(),x,y+280);
-        g.drawString("Q: " +df.format(qcd/((100.0+cdr)/100))+" seconds",x,y+300);
-        g.drawString("W: " +df.format(wcd/((100.0+cdr)/100))+" seconds",x,y+320);
-        g.drawString("E: " +df.format(ecd/((100.0+cdr)/100))+" seconds",x,y+340);
-        g.drawString("R: " +df.format(rcd/((100.0+cdr)/100))+" seconds",x,y+360);
+        g.drawString("Q: " +df.format(qcd/((100.0+cdr)/100))+" secs",x,y+300);
+        g.drawString("W: " +df.format(wcd/((100.0+cdr)/100))+" secs",x,y+320);
+        g.drawString("E: " +df.format(ecd/((100.0+cdr)/100))+" secs",x,y+340);
+        g.drawString("R: " +df.format(rcd/((100.0+cdr)/100))+" secs",x,y+360);
         df.applyPattern("#");
-        g.drawString(s1.getName()+": "+df.format(insight * s1.getCooldown().get(0))+" seconds",x,y+380);
+        g.drawString(s1.getName()+": "+df.format(insight * s1.getCooldown().get(0))+" secs",x,y+380);
         g.drawImage(s1Icon.getScaledInstance(30, 30, Image.SCALE_REPLICATE),x+125,y+355,null);
-        g.drawString(s2.getName()+": "+df.format(insight * s2.getCooldown().get(0))+" seconds",x,y+400);
+        g.drawString(s2.getName()+": "+df.format(insight * s2.getCooldown().get(0))+" secs",x,y+400);
         g.drawImage(s2Icon.getScaledInstance(30, 30, Image.SCALE_REPLICATE),x+125,y+385,null);
         df.applyPattern("#.#");
         g.drawString("CDR: " + df.format(cdr) + "%",x,y+420);
