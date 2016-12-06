@@ -17,6 +17,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -53,11 +54,12 @@ public class Enemy {
     ChampionSpell q, w, e, r;
     SummonerSpell s1,s2;
     Passive passive;
+    Map passives;
     Image icon,s1Icon,s2Icon,lIcon;
     boolean intelligence;
     JSlider s;
     League l;
-    public Enemy(Participant p, RiotApi api,long gameId) throws RiotApiException{
+    public Enemy(Participant p, RiotApi api,long gameId, Map passives) throws RiotApiException{
         cdr=0;
         minCdr=0;
         insight=1;
@@ -76,6 +78,7 @@ public class Enemy {
         icon = getIcon(0);
         s1Icon= getIcon(1);
         s2Icon = getIcon(2);
+        this.passives=passives;
         
         try{
         l=api.getLeagueBySummoner(p.getSummonerId()).get(0);
@@ -134,6 +137,8 @@ public class Enemy {
     }
     
     public void draw(Graphics g,int x, int y, int width, int height){
+        this.getSlider().setLocation(x-20, y+460);
+        this.getSlider().setVisible(true);
         g.setColor(Color.WHITE);
         if(s.getValue()<(int)minCdr){
             s.setValue((int)minCdr);
@@ -154,7 +159,10 @@ public class Enemy {
         double ecd = e.getCooldown().get(0).intValue();
         double rcd = r.getCooldown().get(0).intValue(); 
         g.drawString(c.getName(),x,y+260);
-        g.drawString("P: " + passive.getName(),x,y+280);
+        if(passives.containsKey(c.getName()))
+            g.drawString("P: " + passive.getName() + ": " + passives.get(c.getName()) + " secs", x, y+280);
+        else
+            g.drawString("P: " + passive.getName(),x,y+280);
         g.drawString("Q: " +df.format(qcd/((100.0+cdr)/100))+" secs",x,y+300);
         g.drawString("W: " +df.format(wcd/((100.0+cdr)/100))+" secs",x,y+320);
         g.drawString("E: " +df.format(ecd/((100.0+cdr)/100))+" secs",x,y+340);

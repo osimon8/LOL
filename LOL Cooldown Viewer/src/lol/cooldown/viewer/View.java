@@ -7,6 +7,7 @@ package lol.cooldown.viewer;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,6 +38,8 @@ public class View extends javax.swing.JPanel {
     RiotApi api;
     Map<String, Double> passiveCooldowns;
     ChampionList champRaw;
+    int width;
+    int height;
     public View() throws RiotApiException {
         initComponents();
         api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
@@ -45,6 +48,7 @@ public class View extends javax.swing.JPanel {
         enemies=null;
         manual=true;
         ready=false;
+        
     }
 
     /**
@@ -66,7 +70,7 @@ public class View extends javax.swing.JPanel {
         jButton2 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(0, 41, 106));
-        setPreferredSize(new java.awt.Dimension(1140, 510));
+        setPreferredSize(new java.awt.Dimension(1340, 510));
 
         jSlider1.setMaximum(45);
         jSlider1.setMinorTickSpacing(5);
@@ -301,7 +305,8 @@ public class View extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
-            
+            height = this.getHeight();
+            width = this.getWidth();
             ready=false;
             Summoner summoner=null;
             System.out.println(jTextField1.getText());
@@ -331,7 +336,7 @@ public class View extends javax.swing.JPanel {
                 if(p.getTeamId()==enemyTeamId){
                     System.out.println(p.getSummonerName());
                     System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
-                    enemies.add(new Enemy(p,api,gameId));
+                    enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
                 }
             }
             setEnemies(enemies);
@@ -355,7 +360,7 @@ public class View extends javax.swing.JPanel {
                     //e.getSlider().setValue(5);
                     repaint();
                 }
-                e.draw(g,100+200*ctr,0,this.getWidth(),this.getHeight());
+                e.draw(g,100+250*ctr,0,width,height);
                 ctr++;
             }
         }
@@ -372,30 +377,30 @@ public class View extends javax.swing.JPanel {
         enemies.get(4).setSlider(jSlider9);
         for(Enemy e : enemies){
             e.getSlider().setValue(0);
+            e.getSlider().setVisible(false);
         }
         repaint();
     }
     
     private Map<String, Double> assignCooldowns(){ 
-        Map<String, Double> list = new TreeMap<>(); 
-//    list.put(Aatrox, 225.0);
-//    list.put(Anivia, 240.0);
-//    list.put(Blitzcrank, 90.0);
-//    list.put(Evelynn, 
-//    list.put(Garen, 
-//    list.put(LeBlanc, 
-//    list.put(Lissandra, 18.0);
-//    list.put(Malphite,  
-//    list.put(Miss Fortune, 
-//    list.put(Nocturne,  
-//    list.put(Shen, 
-//    list.put(Teemo, 
-//    list.put(Vi, 
-//    list.put(Volibear, 
-//    list.put(Xerath, 
-//    list.put(Zac, 
-//    list.put(Ziggs,
-        return null;   
+        Map<String, Double> list = new HashMap<>(); 
+        list.put("Aatrox", 225.0);
+        list.put("Anivia", 240.0);
+        list.put("Blitzcrank", 90.0);
+        list.put("Evelynn", 6.0);
+        list.put("Garen", 9.0);
+        list.put("LeBlanc", 5.0);
+        list.put("Lissandra", 18.0);
+        list.put("Malphite",  10.0);
+        list.put("Nocturne",  10.0);
+        list.put("Shen", 10.0);
+        list.put("Teemo", 1.5);
+        list.put("Vi", 16.0);
+        list.put("Volibear", 120.0); 
+        list.put("Xerath", 12.0);
+        list.put("Zac", 300.0);
+        list.put("Ziggs", 12.0);
+        return list;   
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
