@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -67,10 +68,13 @@ public class Enemy {
         this.api=api;
         this.p=p;
         c=api.getDataChampion((int)p.getChampionId(),null,null,ChampData.SPELLS,ChampData.PASSIVE);
+        
         List<ChampionSpell> spells =c.getSpells();
+
+        
         s1 = api.getDataSummonerSpell((int)p.getSpell1Id(), null, null, SpellData.COOLDOWN);
         s2 = api.getDataSummonerSpell((int)p.getSpell2Id(), null, null, SpellData.COOLDOWN);
-        passive=c.getPassive();
+        passive=c.getPassive(); 
         q=spells.get(0);
         w=spells.get(1);
         e=spells.get(2);

@@ -288,8 +288,10 @@ public class View extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         manual=!manual;
         if(enemies!=null){
-            for(Enemy e : enemies)
+            for(Enemy e : enemies){
                 e.getSlider().setVisible(!e.getSlider().isVisible());  
+                
+            }
         }
         if(jButton1.getText().equals("Predicted CDR")){
             jButton1.setText("Manual CDR");
@@ -356,6 +358,7 @@ public class View extends javax.swing.JPanel {
         int ctr=0;
         if(enemies!=null&&ready){
             for(Enemy e : enemies){
+                e.getSlider().setBackground(this.getBackground());
                 if(e.hasIntelligence() && e.getSlider().getValue()<5){
                     //e.getSlider().setValue(5);
                     repaint();
