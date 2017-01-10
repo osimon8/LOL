@@ -85,7 +85,7 @@ public class Enemy {
         this.passives=passives;
         
         try{
-        l=api.getLeagueBySummoner(p.getSummonerId()).get(0);
+        l=api.getLeagueEntryBySummoner(p.getSummonerId()).get(0);
         }
         catch(RiotApiException e){
         l=null;

@@ -333,7 +333,7 @@ public class View extends javax.swing.JPanel {
                 }
                 ctr++;
             }
-            ctr=team1?0:5;
+            ctr=team1?5:0;
             for(Participant p : participants){
                 if(p.getTeamId()==enemyTeamId){
                     System.out.println(p.getSummonerName());
@@ -392,6 +392,7 @@ public class View extends javax.swing.JPanel {
         list.put("Blitzcrank", 90.0);
         list.put("Evelynn", 6.0);
         list.put("Garen", 9.0);
+        list.put("Kindred", 90.0);
         list.put("LeBlanc", 5.0);
         list.put("Lissandra", 18.0);
         list.put("Malphite",  10.0);
