@@ -33,8 +33,8 @@ public class View extends javax.swing.JPanel {
     /**
      * Creates new form View
      */
-    List<Enemy> enemies;
-    boolean manual,ready;
+    List<Enemy> enemies,allies;
+    boolean manual,ready,allied;
     RiotApi api;
     Map<String, Double> passiveCooldowns;
     ChampionList champRaw;
@@ -46,6 +46,8 @@ public class View extends javax.swing.JPanel {
         passiveCooldowns = assignCooldowns();
         champRaw = api.getDataChampionList();
         enemies=null;
+        allies=null;
+        allied=false;
         manual=true;
         ready=false;
         
@@ -68,6 +70,7 @@ public class View extends javax.swing.JPanel {
         jButton1 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(0, 41, 106));
         setPreferredSize(new java.awt.Dimension(1340, 510));
@@ -179,12 +182,19 @@ public class View extends javax.swing.JPanel {
             }
         });
 
+        jButton3.setText("Allied Team");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -201,22 +211,25 @@ public class View extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jButton1)))
-                        .addGap(0, 24, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 278, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 369, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 366, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -255,42 +268,66 @@ public class View extends javax.swing.JPanel {
             enemies.get(0).setCdr(jSlider1.getValue());
             repaint();
         }
+        else if(allied && allies!=null){
+            allies.get(0).setCdr(jSlider1.getValue());
+            repaint();
+        }
     }//GEN-LAST:event_jSlider1StateChanged
 
     private void jSlider8StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider8StateChanged
-        if(enemies!=null){
+        if(enemies!=null && !allied){
             enemies.get(3).setCdr(jSlider8.getValue());
+            repaint();
+        }
+        else if(allied && allies!=null){
+            allies.get(3).setCdr(jSlider8.getValue());
             repaint();
         }
     }//GEN-LAST:event_jSlider8StateChanged
 
     private void jSlider6StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider6StateChanged
-        if(enemies!=null){
+        if(enemies!=null && !allied){
             enemies.get(1).setCdr(jSlider6.getValue());
+            repaint();
+        }
+        else if(allied && allies!=null){
+            allies.get(1).setCdr(jSlider6.getValue());
             repaint();
         }
     }//GEN-LAST:event_jSlider6StateChanged
 
     private void jSlider7StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider7StateChanged
-        if(enemies!=null){
+        if(enemies!=null && !allied){
             enemies.get(2).setCdr(jSlider7.getValue());
+            repaint();
+        }
+        else if(allied && allies!=null){
+            allies.get(2).setCdr(jSlider7.getValue());
             repaint();
         }
     }//GEN-LAST:event_jSlider7StateChanged
 
     private void jSlider9StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider9StateChanged
-        if(enemies!=null){
+        if(enemies!=null && !allied){
             enemies.get(4).setCdr(jSlider9.getValue());
+            repaint();
+        }
+        else if(allied && allies!=null){
+            allies.get(4).setCdr(jSlider9.getValue());
             repaint();
         }
     }//GEN-LAST:event_jSlider9StateChanged
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         manual=!manual;
-        if(enemies!=null){
+        if(enemies!=null && !allied){
             for(Enemy e : enemies){
-                e.getSlider().setVisible(!e.getSlider().isVisible());  
-                
+                e.getSlider().setVisible(!e.getSlider().isVisible());     
+            }
+        }
+        else if(allies!=null && allied){
+            for(Enemy e : enemies){
+                e.getSlider().setVisible(!e.getSlider().isVisible());     
             }
         }
         if(jButton1.getText().equals("Predicted CDR")){
@@ -306,58 +343,20 @@ public class View extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try {
-            height = this.getHeight();
-            width = this.getWidth();
-            ready=false;
-            Summoner summoner=null;
-            System.out.println(jTextField1.getText());
-            summoner = api.getSummonerByName(Region.NA, jTextField1.getText());
-            Map<String, Champion> champs = champRaw.getData();
-            long id = summoner.getId();
-            long enemyTeamId=0;
-            try{
-            CurrentGameInfo gameInfo = api.getCurrentGameInfo(PlatformId.NA, id);
-            List<Participant> participants = gameInfo.getParticipants();
-            long gameId = gameInfo.getGameId();
-            List<Enemy> enemies = new ArrayList<>();
-            int ctr=1;
-            boolean team1 = false;
-            for(Participant p : participants){
-                if(p.getSummonerId()==id){
-                    if(ctr<=5)
-                        enemyTeamId=200;
-                    else{
-                        enemyTeamId=100;
-                        team1=true;}
-                }
-                ctr++;
-            }
-            ctr=team1?5:0;
-            for(Participant p : participants){
-                if(p.getTeamId()==enemyTeamId){
-                    System.out.println(p.getSummonerName());
-                    System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
-                    enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
-                }
-            }
-            setEnemies(enemies);
-            ready=true;
-            }
-            catch(RiotApiException e){
-                System.out.println(summoner.getName()+" is not currently in a game.");
-            }
-            repaint();
-        } catch (RiotApiException ex) {
-            Logger.getLogger(LOLCooldownViewer.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("fail");
-        }
+        genTeam();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        jButton3.setText(jButton3.getText().equals("Allied Team") ? "Enemy Team" : "Allied Team");
+        allied=!allied;
+        genTeam();
+    }//GEN-LAST:event_jButton3ActionPerformed
     public void paintComponent(Graphics g){
+        List<Enemy> l = allied ? allies : enemies;
         super.paintComponent(g);
         int ctr=0;
-        if(enemies!=null&&ready){
-            for(Enemy e : enemies){
+        if(l!=null&&ready){
+            for(Enemy e : l){
                 e.getSlider().setBackground(this.getBackground());
                 if(e.hasIntelligence() && e.getSlider().getValue()<5){
                     //e.getSlider().setValue(5);
@@ -385,6 +384,20 @@ public class View extends javax.swing.JPanel {
         repaint();
     }
     
+    public void setAllies(List<Enemy> ens){
+        allies = ens;
+        allies.get(0).setSlider(jSlider1);
+        allies.get(1).setSlider(jSlider6);
+        allies.get(2).setSlider(jSlider7);
+        allies.get(3).setSlider(jSlider8);
+        allies.get(4).setSlider(jSlider9);
+        for(Enemy e : allies){
+            e.getSlider().setValue(0);
+            e.getSlider().setVisible(false);
+        }
+        repaint();
+    }
+    
     private Map<String, Double> assignCooldowns(){ 
         Map<String, Double> list = new HashMap<>(); 
         list.put("Aatrox", 225.0);
@@ -406,10 +419,68 @@ public class View extends javax.swing.JPanel {
         list.put("Ziggs", 12.0);
         return list;   
     }
+    
+    private void genTeam(){
+        if(enemies==null || allies == null){
+            try {
+                height = this.getHeight();
+                width = this.getWidth();
+                ready=false;
+                Summoner summoner=null;
+                System.out.println(jTextField1.getText());
+                summoner = api.getSummonerByName(Region.NA, jTextField1.getText());
+                Map<String, Champion> champs = champRaw.getData();
+                long id = summoner.getId();
+                long enemyTeamId=0;
+                try{
+                CurrentGameInfo gameInfo = api.getCurrentGameInfo(PlatformId.NA, id);
+                List<Participant> participants = gameInfo.getParticipants();
+                long gameId = gameInfo.getGameId();
+                List<Enemy> enemies = new ArrayList<>();
+                int ctr=1;
+                for(Participant p : participants){
+                    if(p.getSummonerId()==id){
+                        if(ctr<=5)
+                            enemyTeamId=200;
+                        else
+                            enemyTeamId=100;
+                    }
+                    ctr++;
+                }
+                for(Participant p : participants){
+                    if(!allied && p.getTeamId()==enemyTeamId){
+                        System.out.println(p.getSummonerName());
+                        System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
+                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
+                    }
+                    else if(allied && p.getTeamId()!=enemyTeamId ){
+                        System.out.println(p.getSummonerName());
+                        System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
+                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
+                    }
+                }
+                if(!allied)
+                    setEnemies(enemies);
+                else
+                    setAllies(enemies);
+                ready=true;
+                }
+                catch(RiotApiException e){
+                    System.out.println(summoner.getName()+" is not currently in a game.");
+                }
+                repaint();
+            } catch (RiotApiException ex) {
+                Logger.getLogger(LOLCooldownViewer.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("fail");
+            }
+        }
+    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSlider jSlider6;
     private javax.swing.JSlider jSlider7;
