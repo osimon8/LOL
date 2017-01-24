@@ -28,6 +28,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import net.rithms.riot.constant.PlatformId;
 import net.rithms.riot.dto.CurrentGame.CurrentGameInfo;
 import net.rithms.riot.dto.CurrentGame.Participant;
@@ -42,8 +43,10 @@ public class LOLCooldownViewer {
         try{
             View v = new View();
             JFrame f = new JFrame("LOL Cooldown Viewer");
-            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            ImageIcon loading = new ImageIcon("ajax-loader.gif");
             f.getContentPane().add(v);
+            //f.getContentPane().add(new JLabel("loading... ", loading, JLabel.CENTER));
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             //ImageIcon i = new ImageIcon("flash-icon.jpg");
             try{
                 f.setIconImage(ImageIO.read(LOLCooldownViewer.class.getResource("flash-icon.jpg")));

@@ -6,6 +6,10 @@
 package lol.cooldown.viewer;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +17,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
 import net.rithms.riot.constant.PlatformId;
@@ -34,7 +40,7 @@ public class View extends javax.swing.JPanel {
      * Creates new form View
      */
     List<Enemy> enemies,allies;
-    boolean manual,ready,allied;
+    boolean manual,ready,allied,loading;
     RiotApi api;
     Map<String, Double> passiveCooldowns;
     ChampionList champRaw;
@@ -50,6 +56,9 @@ public class View extends javax.swing.JPanel {
         allied=false;
         manual=true;
         ready=false;
+        loading=false;
+        height = this.getHeight();
+        width = this.getWidth();
         
     }
 
@@ -343,17 +352,25 @@ public class View extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        genTeam();
+        genTeam(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jButton3.setText(jButton3.getText().equals("Allied Team") ? "Enemy Team" : "Allied Team");
         allied=!allied;
-        genTeam();
+        genTeam(false);
     }//GEN-LAST:event_jButton3ActionPerformed
     public void paintComponent(Graphics g){
         List<Enemy> l = allied ? allies : enemies;
         super.paintComponent(g);
+        try {
+            Image i = ImageIO.read(LOLCooldownViewer.class.getResource("spinner.png"));
+            g.drawImage(i.getScaledInstance(40, 40, Image.SCALE_REPLICATE), (this.getWidth()/2) ,50 , null);
+            ImageIcon loading = new ImageIcon("ajax-loader.gif");
+ 
+        } catch (IOException ex) {
+            System.out.println("rip");
+        }
         int ctr=0;
         if(l!=null&&ready){
             for(Enemy e : l){
@@ -420,11 +437,14 @@ public class View extends javax.swing.JPanel {
         return list;   
     }
     
-    private void genTeam(){
-        if(enemies==null || allies == null){
+    private void genTeam(boolean override){
+        loading = true;
+        if (override){
+            allies=null;
+            enemies=null;
+        }
+        if(enemies==null || allies == null || override){
             try {
-                height = this.getHeight();
-                width = this.getWidth();
                 ready=false;
                 Summoner summoner=null;
                 System.out.println(jTextField1.getText());

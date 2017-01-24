@@ -154,7 +154,7 @@ public class Enemy {
             g.drawImage(lIcon.getScaledInstance((int)(roc3*width),(int)(roc2*height),Image.SCALE_REPLICATE), x, y, null);
         }
         else
-        g.drawString("UNRANKED",x,y+100);  
+            g.drawString("UNRANKED",x,y+100); 
         g.drawImage(icon.getScaledInstance((int)(roc5*width),(int)(roc4*height),Image.SCALE_REPLICATE),x,y+110,null);
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
@@ -188,6 +188,8 @@ public class Enemy {
                 name  = c.getName();
                 if(name.equals("Rek'Sai")||name.equals("Kog'Maw"))
                     name=name.replace("'", "");
+                else if(name.equals("Wukong"))
+                    name="MonkeyKing";
                 else if(name.contains("'"))
                     name = name.substring(0,1) + (name.substring(1).toLowerCase().replaceAll("'", ""));
                 else if(name.contains("."))
