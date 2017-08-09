@@ -6,10 +6,6 @@
 package lol.cooldown.viewer;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.geom.AffineTransform;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,16 +15,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import net.rithms.riot.api.ApiConfig;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
-import net.rithms.riot.constant.PlatformId;
-import net.rithms.riot.constant.Region;
-import net.rithms.riot.dto.CurrentGame.CurrentGameInfo;
-import net.rithms.riot.dto.CurrentGame.Participant;
-import net.rithms.riot.dto.Match.MatchDetail;
-import net.rithms.riot.dto.Static.Champion;
-import net.rithms.riot.dto.Static.ChampionList;
-import net.rithms.riot.dto.Summoner.Summoner;
+import net.rithms.riot.api.endpoints.match.dto.Match;
+import net.rithms.riot.api.endpoints.match.dto.Participant;
+import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameInfo;
+import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameParticipant;
+import net.rithms.riot.api.endpoints.static_data.dto.Champion;
+import net.rithms.riot.api.endpoints.static_data.dto.ChampionList;
+import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
+import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
+import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
+import net.rithms.riot.constant.Platform;
+//import net.rithms.riot.constant.PlatformId;
+//import net.rithms.riot.constant.Region;
+//import net.rithms.riot.dto.CurrentGame.CurrentGameInfo;
+//import net.rithms.riot.dto.CurrentGame.Participant;
+//import net.rithms.riot.dto.Match.MatchDetail;
+//import net.rithms.riot.dto.Static.Champion;
+//import net.rithms.riot.dto.Static.ChampionList;
+//import net.rithms.riot.dto.Summoner.Summoner;
+
 
 /**
  *
@@ -46,11 +54,15 @@ public class View extends javax.swing.JPanel {
     ChampionList champRaw;
     int width;
     int height;
+    String version;
+    
     public View() throws RiotApiException {
         initComponents();
-        api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
+        ApiConfig config = new ApiConfig().setKey("RGAPI-73692c47-48eb-4ccc-9d11-65513c820cea");
+        api = new RiotApi(config);
+        //System.out.println("Hey" + api.getSummonerByName(Platform.NA, "Dyrus").getAccountId()); //write code to test print here
         passiveCooldowns = assignCooldowns();
-        champRaw = api.getDataChampionList();
+        //champRaw = api.getDataChampionList(Platform.NA);
         enemies=null;
         allies=null;
         allied=false;
@@ -59,6 +71,14 @@ public class View extends javax.swing.JPanel {
         loading=false;
         height = this.getHeight();
         width = this.getWidth();
+        System.out.println(width);
+        //LOLCooldownViewer.updateCache();
+        version = ((List<String>) Cacher.read("cache/versions.ser")).get(0);
+        System.out.println(version);
+        SummonerSpellList spells = (SummonerSpellList)Cacher.read("cache/spells.ser");
+        //System.out.println(spells.getData());
+        //System.out.println(spells.getData().get("4").getCooldown());
+        //System.out.println(jSlider1);
         
     }
 
@@ -220,7 +240,7 @@ public class View extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jButton1)))
-                        .addGap(0, 278, Short.MAX_VALUE))
+                        .addGap(0, 223, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton2)))
@@ -238,7 +258,7 @@ public class View extends javax.swing.JPanel {
                     .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 366, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 400, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,25 +372,27 @@ public class View extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        genTeam(true);
+        try {
+            genTeam(true);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         jButton3.setText(jButton3.getText().equals("Allied Team") ? "Enemy Team" : "Allied Team");
         allied=!allied;
-        genTeam(false);
+        try {
+            genTeam(false);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
     public void paintComponent(Graphics g){
         List<Enemy> l = allied ? allies : enemies;
         super.paintComponent(g);
-        try {
-            Image i = ImageIO.read(LOLCooldownViewer.class.getResource("spinner.png"));
-            g.drawImage(i.getScaledInstance(40, 40, Image.SCALE_REPLICATE), (this.getWidth()/2) ,50 , null);
-            ImageIcon loading = new ImageIcon("ajax-loader.gif");
- 
-        } catch (IOException ex) {
-            System.out.println("rip");
-        }
+        height = this.getHeight();
+        width = this.getWidth();
         int ctr=0;
         if(l!=null&&ready){
             for(Enemy e : l){
@@ -437,7 +459,7 @@ public class View extends javax.swing.JPanel {
         return list;   
     }
     
-    private void genTeam(boolean override){
+    private void genTeam(boolean override) throws InterruptedException{
         loading = true;
         if (override){
             allies=null;
@@ -448,17 +470,20 @@ public class View extends javax.swing.JPanel {
                 ready=false;
                 Summoner summoner=null;
                 System.out.println(jTextField1.getText());
-                summoner = api.getSummonerByName(Region.NA, jTextField1.getText());
-                Map<String, Champion> champs = champRaw.getData();
+                summoner = api.getSummonerByName(Platform.NA, jTextField1.getText());
+                //Map<String, Champion> champs = champRaw.getData();
                 long id = summoner.getId();
                 long enemyTeamId=0;
                 try{
-                CurrentGameInfo gameInfo = api.getCurrentGameInfo(PlatformId.NA, id);
-                List<Participant> participants = gameInfo.getParticipants();
+                    
+                //Match gameInfo = api.getMatch(Platform.NA, id);
+                CurrentGameInfo gameInfo = api.getActiveGameBySummoner(Platform.NA, id);
+                //api.getMa
+                List<CurrentGameParticipant> participants = gameInfo.getParticipants();
                 long gameId = gameInfo.getGameId();
                 List<Enemy> enemies = new ArrayList<>();
                 int ctr=1;
-                for(Participant p : participants){
+                for(CurrentGameParticipant p : participants){
                     if(p.getSummonerId()==id){
                         if(ctr<=5)
                             enemyTeamId=200;
@@ -467,16 +492,17 @@ public class View extends javax.swing.JPanel {
                     }
                     ctr++;
                 }
-                for(Participant p : participants){
+                for(CurrentGameParticipant p : participants){
+                    Summoner summ = api.getSummoner(Platform.NA, p.getSummonerId());
                     if(!allied && p.getTeamId()==enemyTeamId){
-                        System.out.println(p.getSummonerName());
-                        System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
-                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
+                        System.out.println(summ.getName());
+                        //System.out.println(api.getDataChampion(Platform.NA, (int)p.getChampionId()).getName());
+                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns, version));
                     }
                     else if(allied && p.getTeamId()!=enemyTeamId ){
-                        System.out.println(p.getSummonerName());
-                        System.out.println(api.getDataChampion((int)p.getChampionId()).getName());
-                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns));
+                        System.out.println(summ.getName());
+                        //System.out.println(api.getDataChampion(Platform.NA, (int)p.getChampionId()).getName());
+                        enemies.add(new Enemy(p,api,gameId, passiveCooldowns, version));
                     }
                 }
                 if(!allied)
@@ -486,7 +512,8 @@ public class View extends javax.swing.JPanel {
                 ready=true;
                 }
                 catch(RiotApiException e){
-                    System.out.println(summoner.getName()+" is not currently in a game.");
+                    //System.out.println(summoner.getName()+" is not currently in a game.");
+                    Logger.getLogger(LOLCooldownViewer.class.getName()).log(Level.SEVERE, null, e);
                 }
                 repaint();
             } catch (RiotApiException ex) {
@@ -495,6 +522,7 @@ public class View extends javax.swing.JPanel {
             }
         }
     }
+   
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -11,7 +11,10 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -25,18 +28,35 @@ import javax.imageio.ImageIO;
 import javax.swing.JSlider;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
-import net.rithms.riot.constant.Region;
-import net.rithms.riot.constant.staticdata.ChampData;
-import net.rithms.riot.constant.staticdata.RuneData;
-import net.rithms.riot.constant.staticdata.SpellData;
-import net.rithms.riot.dto.CurrentGame.Mastery;
-import net.rithms.riot.dto.CurrentGame.Participant;
-import net.rithms.riot.dto.Static.Rune;
-import net.rithms.riot.dto.League.League;
-import net.rithms.riot.dto.Static.Champion;
-import net.rithms.riot.dto.Static.ChampionSpell;
-import net.rithms.riot.dto.Static.Passive;
-import net.rithms.riot.dto.Static.SummonerSpell;
+import net.rithms.riot.api.endpoints.league.dto.LeagueList;
+import net.rithms.riot.api.endpoints.match.dto.Mastery;
+import net.rithms.riot.api.endpoints.match.dto.Participant;
+import net.rithms.riot.api.endpoints.match.dto.Rune;
+import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameParticipant;
+import net.rithms.riot.api.endpoints.static_data.constant.ChampionTags;
+import net.rithms.riot.api.endpoints.static_data.constant.Locale;
+import net.rithms.riot.api.endpoints.static_data.constant.SpellTags;
+import net.rithms.riot.api.endpoints.static_data.dto.Champion;
+import net.rithms.riot.api.endpoints.static_data.dto.ChampionSpell;
+import net.rithms.riot.api.endpoints.static_data.dto.Passive;
+import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
+import net.rithms.riot.constant.Platform;
+import net.rithms.riot.api.endpoints.static_data.dto.ChampionList;
+import net.rithms.riot.api.endpoints.static_data.dto.MasteryList;
+import net.rithms.riot.api.endpoints.static_data.dto.RuneList;
+import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
+//import net.rithms.riot.constant.Region;
+//import net.rithms.riot.constant.staticdata.ChampData;
+//import net.rithms.riot.constant.staticdata.RuneData;
+//import net.rithms.riot.constant.staticdata.SpellData;
+//import net.rithms.riot.dto.CurrentGame.Mastery;
+//import net.rithms.riot.dto.CurrentGame.Participant;
+//import net.rithms.riot.dto.Static.Rune;
+//import net.rithms.riot.dto.League.League;
+//import net.rithms.riot.dto.Static.Champion;
+//import net.rithms.riot.dto.Static.ChampionSpell;
+//import net.rithms.riot.dto.Static.Passive;
+//import net.rithms.riot.dto.Static.SummonerSpell;
 
 
 /**
@@ -46,7 +66,7 @@ import net.rithms.riot.dto.Static.SummonerSpell;
 
 
 public class Enemy {
-    Participant p;
+    CurrentGameParticipant p;
     Champion c;
     RiotApi api;
     double cdr;
@@ -59,21 +79,26 @@ public class Enemy {
     Image icon,s1Icon,s2Icon,lIcon;
     boolean intelligence;
     JSlider s;
-    League l;
-    public Enemy(Participant p, RiotApi api,long gameId, Map passives) throws RiotApiException{
+    LeagueList l;
+    String version;
+    public Enemy(CurrentGameParticipant p, RiotApi api,long gameId, Map passives, String vsn) throws RiotApiException, InterruptedException{
         cdr=0;
         minCdr=0;
         insight=1;
         s=null;
         this.api=api;
         this.p=p;
-        c=api.getDataChampion((int)p.getChampionId(),null,null,ChampData.SPELLS,ChampData.PASSIVE);
-        
+        version = vsn;
+        //ChampionList ChampData = api.getDataChampionList(Platform.NA);
+        //c=api.getDataChampion(Platform.NA,(int)p.getChampionId(),Locale.EN_US,version, ChampionTags.PASSIVE, ChampionTags.SPELLS);
+        c = ((ChampionList)Cacher.read("cache/champions.ser")).getData().get(""+p.getChampionId());
         List<ChampionSpell> spells =c.getSpells();
-
-        
-        s1 = api.getDataSummonerSpell((int)p.getSpell1Id(), null, null, SpellData.COOLDOWN);
-        s2 = api.getDataSummonerSpell((int)p.getSpell2Id(), null, null, SpellData.COOLDOWN);
+        Map<String, SummonerSpell> spellList = ((SummonerSpellList)Cacher.read("cache/spells.ser")).getData();
+//        s1 = api.getDataSummonerSpell(Platform.NA, (int)p.getSpell1Id(), Locale.EN_US, version, SpellTags.COOLDOWN);
+//        s2 = api.getDataSummonerSpell(Platform.NA, (int)p.getSpell2Id(), Locale.EN_US, version, SpellTags.COOLDOWN);
+        s1  = spellList.get(""+p.getSpell1Id());
+        s2 = spellList.get(""+p.getSpell2Id());
+        System.out.println(s1.toString());
         passive=c.getPassive(); 
         q=spells.get(0);
         w=spells.get(1);
@@ -85,14 +110,14 @@ public class Enemy {
         this.passives=passives;
         
         try{
-        l=api.getLeagueEntryBySummoner(p.getSummonerId()).get(0);
+        l=api.getLeagueBySummonerId(Platform.NA, p.getSummonerId()).get(0);
         }
         catch(RiotApiException e){
         l=null;
         }
         lIcon = getIcon(3);
         //insight is id #6241, intelligence is id #6352
-        for(Mastery m : p.getMasteries()){
+        for(net.rithms.riot.api.endpoints.spectator.dto.Mastery m : p.getMasteries()){
             if(m.getMasteryId()==6352){
                 intelligence = true;
                 minCdr+=5;
@@ -103,11 +128,19 @@ public class Enemy {
         
         
         }
+        
+        //System.out.println(p.getRunes());
         for(int i = 0; i<p.getRunes().size();i++){
-            Rune r = api.getDataRune((int)(p.getRunes().get(i).getRuneId()),null,null,RuneData.ALL);
+            
+//          Rune r = api.getDataRune((int)(p.getRunes().get(i).getRuneId()),null,null,RuneData.ALL);
+            RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
+            net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+p.getRunes().get(i).getRuneId());
             int count = p.getRunes().get(i).getCount();
-            //System.out.println(-100*count*r.getStats().getrPercentCooldownMod());
-            minCdr += (-100*count*r.getStats().getrPercentCooldownMod());  
+           // int count = 1;
+           // r.
+           
+           //System.out.println(-100*count*r.getStats().getPercentCooldownMod());
+           minCdr += (-100*count*r.getStats().getPercentCooldownMod());  
         }
         //if((int)minCdr%5!=0)
             //s.setSnapToTicks(false);
@@ -124,7 +157,7 @@ public class Enemy {
 //           cdr=5; 
 //        }
     }
-    public Participant getParticipant(){
+    public CurrentGameParticipant getParticipant(){
         return p;
     }
     
@@ -150,8 +183,13 @@ public class Enemy {
         }
         double roc = 0.0392, roc2 = .1961, roc3 = 0.08772, roc4 = .2353, roc5=.10526;//20,100h,100w,120h,120w
         if(l!=null){
-            g.drawString(l.getTier() +" "+ l.getEntries().get(0).getDivision(),x,y+100);
-            g.drawImage(lIcon.getScaledInstance((int)(roc3*width),(int)(roc2*height),Image.SCALE_REPLICATE), x, y, null);
+            //l.getEntries().get
+            if(l.getTier().equals("MASTER") || l.getTier().equals("CHALLENGER"))
+                g.drawString(l.getTier(),x,y+100);
+            else
+                g.drawString(l.getTier() +" "+ l.getEntryBySummonerId(this.p.getSummonerId()).getRank(),x,y+100);
+            if(lIcon != null)
+                g.drawImage(lIcon.getScaledInstance((int)(roc3*width),(int)(roc2*height),Image.SCALE_REPLICATE), x, y, null);
         }
         else
             g.drawString("UNRANKED",x,y+100); 
@@ -172,9 +210,18 @@ public class Enemy {
         g.drawString("E: " +df.format(ecd/((100.0+cdr)/100))+" secs",x,y+340);
         g.drawString("R: " +df.format(rcd/((100.0+cdr)/100))+" secs",x,y+360);
         df.applyPattern("#");
-        g.drawString(s1.getName()+": "+df.format(insight * s1.getCooldown().get(0))+" secs",x,y+380);
+        double cooldown1, cooldown2;
+        if (s1.getId() == 12)
+            cooldown1 = 300.0;
+        else
+            cooldown1 = s1.getCooldown().get(0);
+        if (s2.getId() == 12)
+            cooldown2 = 300.0;
+        else
+            cooldown2 = s2.getCooldown().get(0);
+        g.drawString(s1.getName()+": "+df.format(insight * cooldown1)+" secs",x,y+380);
         g.drawImage(s1Icon.getScaledInstance(30, 30, Image.SCALE_REPLICATE),x+125,y+355,null);
-        g.drawString(s2.getName()+": "+df.format(insight * s2.getCooldown().get(0))+" secs",x,y+400);
+        g.drawString(s2.getName()+": "+df.format(insight * cooldown2)+" secs",x,y+400);
         g.drawImage(s2Icon.getScaledInstance(30, 30, Image.SCALE_REPLICATE),x+125,y+385,null);
         df.applyPattern("#.#");
         g.drawString("CDR: " + df.format(cdr) + "%",x,y+420);
@@ -182,54 +229,25 @@ public class Enemy {
     }
     
     private Image getIcon(int i) throws RiotApiException{
-        String s="",name="", version = api.getDataVersions().get(0);
+        String s="",name="";
         switch(i){
             case(0):
-                name  = c.getName();
-                if(name.equals("Rek'Sai")||name.equals("Kog'Maw"))
-                    name=name.replace("'", "");
-                else if(name.equals("Wukong"))
-                    name="MonkeyKing";
-                else if(name.contains("'"))
-                    name = name.substring(0,1) + (name.substring(1).toLowerCase().replaceAll("'", ""));
-                else if(name.contains("."))
-                    name = name.replaceAll(". ", "");
-                else if(name.contains(" "))
-                    name = name.substring(0,1) + (name.substring(1).replaceAll(" ", ""));
+                name  = c.getKey();
                 s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/champion/" +name+".png";
                 break;
             case(1):
-                name = s1.getName();
-                if(name.equals("Ignite"))
-                    name="Dot";
-                else if(name.equals("Ghost"))
-                    name="Haste";
-                else if(name.equals("Mark"))
-                    name="Snowball";
-                else if(name.equals("Cleanse"))
-                    name="Boost";
-                else if(name.equals("Clarity"))
-                    name="Mana";
-                s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/spell/Summoner" +name+".png";
+                name = s1.getKey();
+                s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/spell/" +name+".png";
                 break;
              case(2):
-                 name = s2.getName();
-                 if(name.equals("Ignite"))
-                    name="Dot";
-                else if(name.equals("Ghost"))
-                    name="Haste";
-                 else if(name.equals("Mark"))
-                    name="Snowball";
-                else if(name.equals("Cleanse"))
-                    name="Boost";
-                else if(name.equals("Clarity"))
-                    name="Mana";
-                 s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/spell/Summoner" +name+".png";
+                 name = s2.getKey();
+                 s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/spell/" +name+".png";
                  break;
              case(3):
                  if(l!=null){
-                    name=l.getTier().toLowerCase()+"_"+numeralToNumber(l.getEntries().get(0).getDivision());
-                    s="http://sk2.op.gg/images/medals/"+name+".png";
+                    System.out.println(l.getEntryBySummonerId(this.p.getSummonerId()).getRank());
+                    name=l.getTier().toLowerCase()+"_"+numeralToNumber(l.getEntryBySummonerId(this.p.getSummonerId()).getRank());
+                    s="https://opgg-static.akamaized.net/images/medals/" + name + ".png";
                  }
                  break;
     }
