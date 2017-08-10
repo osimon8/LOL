@@ -42,6 +42,7 @@ import net.rithms.riot.api.endpoints.static_data.dto.Passive;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
 import net.rithms.riot.constant.Platform;
 import net.rithms.riot.api.endpoints.static_data.dto.ChampionList;
+import net.rithms.riot.api.endpoints.static_data.dto.Item;
 import net.rithms.riot.api.endpoints.static_data.dto.MasteryList;
 import net.rithms.riot.api.endpoints.static_data.dto.RuneList;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
@@ -81,8 +82,10 @@ public class Enemy {
     JSlider s;
     LeagueList l;
     String version;
+    List<Item> items;
     public Enemy(CurrentGameParticipant p, RiotApi api,long gameId, Map passives, String vsn) throws RiotApiException, InterruptedException{
         cdr=0;
+        items=null;
         minCdr=0;
         insight=1;
         s=null;
@@ -116,34 +119,8 @@ public class Enemy {
             l=null;
         }
         lIcon = getIcon(3);
-        //insight is id #6241, intelligence is id #6352
-        for(net.rithms.riot.api.endpoints.spectator.dto.Mastery m : p.getMasteries()){
-            if(m.getMasteryId()==6352){
-                intelligence = true;
-                minCdr+=5;
-            }
-            if(m.getMasteryId()==6241){
-                insight=0.85;
-            }
         
-        
-        }
-        
-        //System.out.println(p.getRunes());
-        for(int i = 0; i<p.getRunes().size();i++){
-            
-//          Rune r = api.getDataRune((int)(p.getRunes().get(i).getRuneId()),null,null,RuneData.ALL);
-            RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
-            net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+p.getRunes().get(i).getRuneId());
-            int count = p.getRunes().get(i).getCount();
-           // int count = 1;
-           // r.
-           
-           //System.out.println(-100*count*r.getStats().getPercentCooldownMod());
-           minCdr += (-100*count*r.getStats().getPercentCooldownMod());  
-        }
-        //if((int)minCdr%5!=0)
-            //s.setSnapToTicks(false);
+        updateCdr();
         
     }
     
@@ -173,6 +150,44 @@ public class Enemy {
         return intelligence;   
     }
     
+    public double updateCdr(){
+     minCdr = 0;
+     if (items != null){
+        for(Item i : items){
+           String s = i.getDescription();
+           String newS = s.substring(s.indexOf("Cooldown Reduction") - 4, s.indexOf("Cooldown Reduction") - 2);
+           if(newS.contains("+"))
+               newS = newS.substring(1);
+           minCdr += Double.parseDouble(newS);
+        }
+    }
+     //insight is id #6241, intelligence is id #6352
+      for(net.rithms.riot.api.endpoints.spectator.dto.Mastery m : p.getMasteries()){
+            if(m.getMasteryId()==6352){
+                intelligence = true;
+                minCdr+=5;
+            }
+            if(m.getMasteryId()==6241){
+                insight=0.85;
+            }
+        }
+
+        for(int i = 0; i<p.getRunes().size();i++){
+            RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
+            net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+p.getRunes().get(i).getRuneId());
+            int count = p.getRunes().get(i).getCount();
+           minCdr += (-100*count*r.getStats().getPercentCooldownMod());  
+        }
+        cdr = minCdr;
+     
+     return cdr;   
+    }
+    
+    public void setItems(List<Item> items){
+        this.items = items;
+    }
+    
+    
     public void draw(Graphics g,int x, int y, int width, int height){
         this.getSlider().setLocation(x-20, y+460);
         this.getSlider().setVisible(true);
@@ -192,7 +207,7 @@ public class Enemy {
                 g.drawImage(lIcon.getScaledInstance((int)(roc3*width),(int)(roc2*height),Image.SCALE_REPLICATE), x, y, null);
         }
         else
-            g.drawString("UNRANKED",x,y+100); 
+        g.drawString("UNRANKED",x,y+100); 
         g.drawImage(icon.getScaledInstance((int)(roc5*width),(int)(roc4*height),Image.SCALE_REPLICATE),x,y+110,null);
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);

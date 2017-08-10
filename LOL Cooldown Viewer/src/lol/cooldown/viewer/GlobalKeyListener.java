@@ -13,18 +13,24 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 public class GlobalKeyListener implements NativeKeyListener {
+        int count = 0;
+        View v;
+        public GlobalKeyListener(View v){
+            this.v = v;
+        }
+        
 	public void nativeKeyPressed(NativeKeyEvent e) {
 		//System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
                 //System.out.println("hit");
-                if (e.getKeyCode() == NativeKeyEvent.VC_TAB){
+                if (count == 0 && e.getKeyCode() == NativeKeyEvent.VC_TAB){
+                    count++;
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(GlobalKeyListener.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     ImageHandler.screenshot();
                 }
-
                 
 //		if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
 //                    try {
@@ -37,7 +43,11 @@ public class GlobalKeyListener implements NativeKeyListener {
 
 	public void nativeKeyReleased(NativeKeyEvent e) {
 		//System.out.println("Key Released: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
-                
+                if (count != 0 && e.getKeyCode() == NativeKeyEvent.VC_TAB){
+                    count = 0;
+                    System.out.println("hey");
+                    v.newScreenshot();
+                }
 
 	}
 
@@ -45,7 +55,7 @@ public class GlobalKeyListener implements NativeKeyListener {
 		//System.out.println("Key Typed: " + e.getKeyText(e.getKeyCode()));
 	}
 
-	public static void listen(){
+	public void listen(){
                 Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
                 logger.setLevel(Level.OFF);
                 logger.setUseParentHandlers(false);
@@ -59,6 +69,6 @@ public class GlobalKeyListener implements NativeKeyListener {
 			System.exit(1);
 		}
 
-		GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
+		GlobalScreen.addNativeKeyListener(new GlobalKeyListener(v));
 	}
 }

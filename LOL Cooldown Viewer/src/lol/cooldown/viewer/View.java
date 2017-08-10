@@ -94,8 +94,24 @@ public class View extends javax.swing.JPanel {
         version = ((List<String>) Cacher.read("cache/versions.ser")).get(0);
         System.out.println(version);
         SummonerSpellList spells = (SummonerSpellList)Cacher.read("cache/spells.ser");
+        BufferedImage img2 = ImageHandler.crop(1286, 342, 34, 34, "in-game4.png", null);
+        Item ip = ImageHandler.parseItem(img2);
+        if(ip != null){
+        System.out.println();
+        String s = ip.getDescription();
+        String newS = s.substring(s.indexOf("Cooldown Reduction") - 4, s.indexOf("Cooldown Reduction") - 2);
+        if(newS.contains("+"))
+            newS = newS.substring(1);
+        System.out.println(newS);
+        }
+//        for (List<BufferedImage> l : ImageHandler.getAllSummonerItemPics()){
+//            for(BufferedImage img : l){
+//                ImageHandler.parseItem(img);
+//            }  
+//        }
         
-
+        
+        
         ItemList iList = (ItemList)Cacher.read("cache/items.ser");
         //String imgLoc = "xd";
         //System.out.println(iList.getData().get("3082").getImage().getFull());
@@ -477,25 +493,32 @@ public class View extends javax.swing.JPanel {
         
         
         
-        ItemList iList = (ItemList)Cacher.read("cache/items.ser");
-        String imgLoc = iList.getData().get("3147").getImage().getFull();
-        String s = "http://ddragon.leagueoflegends.com/cdn/" + version+  "/img/item/" + imgLoc;
-        BufferedImage image = null;
-        try {
-            URL url = new URL(s);
-            image = ImageIO.read(url);
-        }  catch (IOException e) {
-        }
-        BufferedImage img1 = new BufferedImage(33, 34, BufferedImage.TYPE_INT_RGB);
-        Graphics g2 = img1.createGraphics();
-        g2.drawImage(image, 0, 0, 33, 34, null);
-        g2.dispose();
-        //BufferedImage img1 = image.getScaledInstance(33, 35, Image.SCALE_REPLICATE);
-        BufferedImage img2 = ImageHandler.crop(1320, 418, 33, 34, "in-game4.png", "item#4.png");
-        g.drawImage(img1, 100, 200, null);
-        g.drawImage(img2, 300, 200, null);
-        System.out.println(ImageHandler.compare(img1, img2));
-        System.out.println(ImageHandler.imageEqual(img1, img2, 0.7));
+//        ItemList iList = (ItemList)Cacher.read("cache/items.ser");
+//        String imgLoc = iList.getData().get("3020").getImage().getFull();
+//        String s = "http://ddragon.leagueoflegends.com/cdn/" + version+  "/img/item/" + imgLoc;
+//        BufferedImage image = null;
+//        try {
+//            URL url = new URL(s);
+//            image = ImageIO.read(url);
+//        }  catch (IOException e) {
+//        }
+//        BufferedImage img1 = new BufferedImage(34, 34, BufferedImage.TYPE_INT_RGB);
+//        Graphics g2 = img1.createGraphics();
+//        g2.drawImage(image, 0, 0, 34, 34, null);
+//        g2.dispose();
+//        //BufferedImage img1 = image.getScaledInstance(33, 35, Image.SCALE_REPLICATE);
+//        BufferedImage img2 = ImageHandler.crop(1354, 646, 34, 34, "in-game4.png", null);
+//        ctr = 0;
+//        
+//        for(BufferedImage img : ImageHandler.getSummonerItemPics(5)){
+//            g.drawImage(img, 100 + 100 * ctr, 300, null);
+//            ctr++;
+//        }
+//        g.drawImage(img1, 100, 200, null);
+//        g.drawImage(img2, 300, 200, null);
+//        System.out.println(ImageHandler.compare(img1, img2, .35));
+//        System.out.println(ImageHandler.imageEqual(img1, img2, 0.7));
+        
         
         
         
@@ -550,6 +573,28 @@ public class View extends javax.swing.JPanel {
         return list;   
     }
     
+    
+    public void newScreenshot(){
+        System.out.println("new screenshot bby");
+        int ctr = 1;
+        for (Enemy e : enemies){
+            List<Item> items = new ArrayList<>();
+            List<BufferedImage> pics = ImageHandler.getSummonerItemPics("in-game4.png", ctr);
+            for(BufferedImage img : pics){
+                Item i = ImageHandler.parseItem(img);
+                if (i != null){
+                    items.add(i);
+                    
+                }
+                
+            }
+            e.setItems(items);
+            e.updateCdr();
+            ctr++;
+        }
+        this.repaint();
+        System.out.println("done");
+    }
     
     private void genTeam(boolean override) throws InterruptedException{
         loading = true;

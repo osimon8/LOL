@@ -56,7 +56,7 @@ public class LOLCooldownViewer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        GlobalKeyListener.listen();
+
         //GlobalMouseListenerExample.listen();
         try{
             View v = new View();
@@ -70,6 +70,8 @@ public class LOLCooldownViewer {
             }catch(IOException e){System.out.println("no");}
             f.pack();
             f.setVisible(true);
+            GlobalKeyListener listener = new GlobalKeyListener(v);
+            listener.listen();
 //        try {
 //            RiotApi api = new RiotApi("21190d18-af0f-48ec-afe9-926f9fe237a4");
 //            
