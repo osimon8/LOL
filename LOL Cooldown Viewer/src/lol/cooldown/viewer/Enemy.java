@@ -112,8 +112,8 @@ public class Enemy {
         try{
         l=api.getLeagueBySummonerId(Platform.NA, p.getSummonerId()).get(0);
         }
-        catch(RiotApiException e){
-        l=null;
+        catch(RiotApiException | IndexOutOfBoundsException e){
+            l=null;
         }
         lIcon = getIcon(3);
         //insight is id #6241, intelligence is id #6352
@@ -234,7 +234,15 @@ public class Enemy {
             case(0):
                 name  = c.getKey();
                 s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/champion/" +name+".png";
-                break;
+                Image image = null;
+                try {
+                    image = ImageIO.read(new File("cache/images/champions/" + c.getKey() + ".png"));
+                } catch (IOException ex) {
+                    Logger.getLogger(Enemy.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return image;
+        
+                //break;
             case(1):
                 name = s1.getKey();
                 s="https://ddragon.leagueoflegends.com/cdn/"+version+"/img/spell/" +name+".png";

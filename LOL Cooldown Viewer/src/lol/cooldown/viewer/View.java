@@ -5,7 +5,19 @@
  */
 package lol.cooldown.viewer;
 
+import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +26,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.KeyStroke;
 import net.rithms.riot.api.ApiConfig;
 import net.rithms.riot.api.RiotApi;
 import net.rithms.riot.api.RiotApiException;
@@ -24,10 +39,13 @@ import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameInfo;
 import net.rithms.riot.api.endpoints.spectator.dto.CurrentGameParticipant;
 import net.rithms.riot.api.endpoints.static_data.dto.Champion;
 import net.rithms.riot.api.endpoints.static_data.dto.ChampionList;
+import net.rithms.riot.api.endpoints.static_data.dto.Item;
+import net.rithms.riot.api.endpoints.static_data.dto.ItemList;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
 import net.rithms.riot.constant.Platform;
+import sun.awt.image.ToolkitImage;
 //import net.rithms.riot.constant.PlatformId;
 //import net.rithms.riot.constant.Region;
 //import net.rithms.riot.dto.CurrentGame.CurrentGameInfo;
@@ -58,7 +76,7 @@ public class View extends javax.swing.JPanel {
     
     public View() throws RiotApiException {
         initComponents();
-        ApiConfig config = new ApiConfig().setKey("RGAPI-73692c47-48eb-4ccc-9d11-65513c820cea");
+        ApiConfig config = new ApiConfig().setKey("RGAPI-80e44638-93fe-4db5-b498-2bab841759ba");
         api = new RiotApi(config);
         //System.out.println("Hey" + api.getSummonerByName(Platform.NA, "Dyrus").getAccountId()); //write code to test print here
         passiveCooldowns = assignCooldowns();
@@ -76,6 +94,38 @@ public class View extends javax.swing.JPanel {
         version = ((List<String>) Cacher.read("cache/versions.ser")).get(0);
         System.out.println(version);
         SummonerSpellList spells = (SummonerSpellList)Cacher.read("cache/spells.ser");
+        
+
+        ItemList iList = (ItemList)Cacher.read("cache/items.ser");
+        //String imgLoc = "xd";
+        //System.out.println(iList.getData().get("3082").getImage().getFull());
+        for(String key : iList.getData().keySet()){
+            Item i = iList.getData().get(key);
+//            if(i.getTags() != null && i.getTags().contains("CooldownReduction")){
+//                String imgLoc = i.getImage().getFull();
+//                String s = "http://ddragon.leagueoflegends.com/cdn/" + version+  "/img/item/" + imgLoc;
+//                BufferedImage image = null;
+//                try {
+//                    URL url = new URL(s);
+//                    image = ImageIO.read(url);
+//                }  catch (IOException e) {
+//                }
+//                BufferedImage img1 = new BufferedImage(33, 32, BufferedImage.TYPE_INT_RGB);
+//                Graphics g2 = img1.createGraphics();
+//                g2.drawImage(image, 0, 0, 33, 32, null);
+//                g2.dispose();
+//                //BufferedImage img1 = image.getScaledInstance(33, 35, Image.SCALE_REPLICATE);
+//                BufferedImage img2 = ImageHandler.crop(1287, 418, 33, 32, "in-game2.png", "item#1.png");
+//                //g.drawImage(img1, 100, 200, null);
+//                //g.drawImage(img2, 300, 200, null);
+//                //System.out.println(ImageHandler.compare(img1, img2));
+//                if(ImageHandler.imageEqual(img1, img2, 0.55)){
+//                    System.out.println(i.getName());
+//                    break;
+//                }
+//            }
+        }
+        //System.out.println("done");
         //System.out.println(spells.getData());
         //System.out.println(spells.getData().get("4").getCooldown());
         //System.out.println(jSlider1);
@@ -103,6 +153,16 @@ public class View extends javax.swing.JPanel {
 
         setBackground(new java.awt.Color(0, 41, 106));
         setPreferredSize(new java.awt.Dimension(1340, 510));
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jSlider1.setMaximum(45);
         jSlider1.setMinorTickSpacing(5);
@@ -125,7 +185,7 @@ public class View extends javax.swing.JPanel {
         jSlider6.setMinorTickSpacing(5);
         jSlider6.setPaintTicks(true);
         jSlider6.setSnapToTicks(true);
-        jSlider6.setToolTipText("Champion 3");
+        jSlider6.setToolTipText("Champion 2");
         jSlider6.setValue(0);
         jSlider6.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -142,7 +202,7 @@ public class View extends javax.swing.JPanel {
         jSlider7.setMinorTickSpacing(5);
         jSlider7.setPaintTicks(true);
         jSlider7.setSnapToTicks(true);
-        jSlider7.setToolTipText("Champion 4");
+        jSlider7.setToolTipText("Champion 3");
         jSlider7.setValue(0);
         jSlider7.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -159,7 +219,7 @@ public class View extends javax.swing.JPanel {
         jSlider8.setMinorTickSpacing(5);
         jSlider8.setPaintTicks(true);
         jSlider8.setSnapToTicks(true);
-        jSlider8.setToolTipText("Champion 2");
+        jSlider8.setToolTipText("Champion 4");
         jSlider8.setValue(0);
         jSlider8.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -388,6 +448,14 @@ public class View extends javax.swing.JPanel {
             Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMouseClicked
     public void paintComponent(Graphics g){
         List<Enemy> l = allied ? allies : enemies;
         super.paintComponent(g);
@@ -405,10 +473,33 @@ public class View extends javax.swing.JPanel {
                 ctr++;
             }
         }
+
+        
+        
+        
+        ItemList iList = (ItemList)Cacher.read("cache/items.ser");
+        String imgLoc = iList.getData().get("3147").getImage().getFull();
+        String s = "http://ddragon.leagueoflegends.com/cdn/" + version+  "/img/item/" + imgLoc;
+        BufferedImage image = null;
+        try {
+            URL url = new URL(s);
+            image = ImageIO.read(url);
+        }  catch (IOException e) {
+        }
+        BufferedImage img1 = new BufferedImage(33, 34, BufferedImage.TYPE_INT_RGB);
+        Graphics g2 = img1.createGraphics();
+        g2.drawImage(image, 0, 0, 33, 34, null);
+        g2.dispose();
+        //BufferedImage img1 = image.getScaledInstance(33, 35, Image.SCALE_REPLICATE);
+        BufferedImage img2 = ImageHandler.crop(1320, 418, 33, 34, "in-game4.png", "item#4.png");
+        g.drawImage(img1, 100, 200, null);
+        g.drawImage(img2, 300, 200, null);
+        System.out.println(ImageHandler.compare(img1, img2));
+        System.out.println(ImageHandler.imageEqual(img1, img2, 0.7));
+        
         
         
     }
-    
     public void setEnemies(List<Enemy> ens){
         enemies = ens;
         enemies.get(0).setSlider(jSlider1);
@@ -458,6 +549,7 @@ public class View extends javax.swing.JPanel {
         list.put("Ziggs", 12.0);
         return list;   
     }
+    
     
     private void genTeam(boolean override) throws InterruptedException{
         loading = true;
@@ -521,6 +613,9 @@ public class View extends javax.swing.JPanel {
                 System.out.println("fail");
             }
         }
+        
+        
+        
     }
    
     
