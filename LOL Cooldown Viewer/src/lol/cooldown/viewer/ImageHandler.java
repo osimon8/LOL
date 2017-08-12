@@ -64,15 +64,22 @@ public class ImageHandler {
         return null;
     }
     public static double compare(BufferedImage img1, BufferedImage img2, double region){
-        if ((img1.getWidth() != img2.getWidth()) || (img1.getHeight() != img2.getHeight()))
+        int width = img1.getWidth();
+        int height = img1.getHeight();
+        if ((width != img2.getWidth()) || (height != img2.getHeight()))
             return 0;
         double num = 0;
-        int startX = (int)(img1.getWidth() * region);
-        int startY = (int) (img1.getWidth() * region);
-        for(int y = startY; y <= (int)(img1.getHeight() - region * img1.getHeight()); y++){
-            //System.out.println(i);
-            for(int x = startX;x <= (int)(img1.getWidth() - region * img1.getWidth()); x++){
-                //System.out.println(j);
+        System.out.println(width);
+        int startX = (int)(width * region);
+        int startY = (int) (width * region);
+        int endX = (int)(width - region * width);
+        int endY = (int)(height - region * height);
+        endX = endX >= width ? width - 1: endX;
+        endY = endY >= height ? height - 1 : endY;
+        
+        for(int y = startY; y <= endY; y++){
+            for(int x = startX; x <= endX; x++){
+                //System.out.println("(" + x + ", " + y + ")");
                 //System.out.println(distance(new Color(img1.getRGB(j,i)), new Color(img2.getRGB(j, i))));
                 if (distance(new Color(img1.getRGB(x,y)), new Color(img2.getRGB(x, y))) <= 45){
                     //System.out.println(new Color(img1.getRGB(j, i)));
@@ -81,7 +88,7 @@ public class ImageHandler {
             }
         }
         
-        return num / ((img1.getWidth() - 2 * region * img1.getWidth()) * (img1.getHeight() - 2 * region * img1.getHeight()));
+        return num / ((width - 2 * region * width) * (height - 2 * region * height));
     } 
     
     

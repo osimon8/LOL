@@ -83,6 +83,7 @@ public class Enemy {
     LeagueList l;
     String version;
     List<Item> items;
+    int level;
     public Enemy(CurrentGameParticipant p, RiotApi api,long gameId, Map passives, String vsn) throws RiotApiException, InterruptedException{
         cdr=0;
         items=null;
@@ -92,6 +93,7 @@ public class Enemy {
         this.api=api;
         this.p=p;
         version = vsn;
+        level = 1;
         //ChampionList ChampData = api.getDataChampionList(Platform.NA);
         //c=api.getDataChampion(Platform.NA,(int)p.getChampionId(),Locale.EN_US,version, ChampionTags.PASSIVE, ChampionTags.SPELLS);
         c = ((ChampionList)Cacher.read("cache/champions.ser")).getData().get(""+p.getChampionId());
@@ -150,6 +152,10 @@ public class Enemy {
         return intelligence;   
     }
     
+    public void setLevel(int level){
+        this.level = level;
+    }
+    
     public double updateCdr(){
      minCdr = 0;
      if (items != null){
@@ -176,6 +182,7 @@ public class Enemy {
             RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
             net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+p.getRunes().get(i).getRuneId());
             int count = p.getRunes().get(i).getCount();
+            System.out.println(r.getStats().getPercentCooldownModPerLevel());
            minCdr += (-100*count*r.getStats().getPercentCooldownMod());  
         }
         cdr = minCdr;

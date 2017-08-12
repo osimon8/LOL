@@ -41,6 +41,7 @@ import net.rithms.riot.api.endpoints.static_data.dto.Champion;
 import net.rithms.riot.api.endpoints.static_data.dto.ChampionList;
 import net.rithms.riot.api.endpoints.static_data.dto.Item;
 import net.rithms.riot.api.endpoints.static_data.dto.ItemList;
+import net.rithms.riot.api.endpoints.static_data.dto.RuneList;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpell;
 import net.rithms.riot.api.endpoints.static_data.dto.SummonerSpellList;
 import net.rithms.riot.api.endpoints.summoner.dto.Summoner;
@@ -95,15 +96,24 @@ public class View extends javax.swing.JPanel {
         System.out.println(version);
         SummonerSpellList spells = (SummonerSpellList)Cacher.read("cache/spells.ser");
         BufferedImage img2 = ImageHandler.crop(1286, 342, 34, 34, "in-game4.png", null);
-        Item ip = ImageHandler.parseItem(img2);
-        if(ip != null){
-        System.out.println();
-        String s = ip.getDescription();
-        String newS = s.substring(s.indexOf("Cooldown Reduction") - 4, s.indexOf("Cooldown Reduction") - 2);
-        if(newS.contains("+"))
-            newS = newS.substring(1);
-        System.out.println(newS);
+        RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
+        
+            for(String id : rList.getData().keySet()){
+            net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+id);
+            int count = 1;
+            System.out.println("Per Level: " + -100 * r.getStats().getPercentCooldownModPerLevel());
+           System.out.println("Flat cooldown: " + (-100 * count*r.getStats().getPercentCooldownMod()));  
         }
+        
+//        Item ip = ImageHandler.parseItem(img2);
+//        if(ip != null){
+//            System.out.println();
+//            String s = ip.getDescription();
+//            String newS = s.substring(s.indexOf("Cooldown Reduction") - 4, s.indexOf("Cooldown Reduction") - 2);
+//            if(newS.contains("+"))
+//                newS = newS.substring(1);
+//            System.out.println(newS);
+//        }
 //        for (List<BufferedImage> l : ImageHandler.getAllSummonerItemPics()){
 //            for(BufferedImage img : l){
 //                ImageHandler.parseItem(img);
@@ -507,7 +517,16 @@ public class View extends javax.swing.JPanel {
 //        g2.drawImage(image, 0, 0, 34, 34, null);
 //        g2.dispose();
 //        //BufferedImage img1 = image.getScaledInstance(33, 35, Image.SCALE_REPLICATE);
-//        BufferedImage img2 = ImageHandler.crop(1354, 646, 34, 34, "in-game4.png", null);
+
+//       //(1092, 358) 20x16 for level #1 
+//        BufferedImage img2 = ImageHandler.crop(1092, 358 + 76, 20, 16, "in-game6.png", "levels/9.png");
+//        try {
+//            System.out.println(ImageHandler.compare(ImageIO.read(new File("levels/1.png")), ImageIO.read(new File("levels/9.png"))));
+//        } catch (IOException ex) {
+//            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        g.drawImage(img2, 400, 300, null);
+
 //        ctr = 0;
 //        
 //        for(BufferedImage img : ImageHandler.getSummonerItemPics(5)){
