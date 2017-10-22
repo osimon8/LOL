@@ -114,7 +114,7 @@ public class LOLCooldownViewer {
     
     
     public static void updateCache() throws RiotApiException{
-        ApiConfig config = new ApiConfig().setKey("RGAPI-80e44638-93fe-4db5-b498-2bab841759ba");
+        ApiConfig config = new ApiConfig().setKey("RGAPI-7b393130-4f37-4583-9e5d-50cc59097cc2");
         RiotApi api = new RiotApi(config);
         Cacher.store(api.getDataVersions(Platform.NA), "cache/versions.ser");
         String vsn = ((List<String>)Cacher.read("cache/versions.ser")).get(0);

@@ -39,8 +39,9 @@ public class ImageHandler {
 
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             Rectangle captureRect = new Rectangle(0, 0, screenSize.width, screenSize.height);
+            System.out.println(screenSize.width + ", " + screenSize.height);
             BufferedImage screenFullImage = robot.createScreenCapture(captureRect);
-            BufferedImage subImage = screenFullImage.getSubimage(1287, 418, 48, 48);
+           // BufferedImage subImage = screenFullImage.getSubimage(1287, 418, 48, 48);
             ImageIO.write(screenFullImage, format, new File(fileName));
             
 
@@ -69,7 +70,7 @@ public class ImageHandler {
         if ((width != img2.getWidth()) || (height != img2.getHeight()))
             return 0;
         double num = 0;
-        System.out.println(width);
+        //System.out.println(width);
         int startX = (int)(width * region);
         int startY = (int) (width * region);
         int endX = (int)(width - region * width);

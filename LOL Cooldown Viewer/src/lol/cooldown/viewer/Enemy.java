@@ -182,7 +182,7 @@ public class Enemy {
             RuneList rList = (RuneList)Cacher.read("cache/runes.ser");
             net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+p.getRunes().get(i).getRuneId());
             int count = p.getRunes().get(i).getCount();
-            System.out.println(r.getStats().getPercentCooldownModPerLevel());
+            //System.out.println(r.getStats().getPercentCooldownModPerLevel());
            minCdr += (-100*count*r.getStats().getPercentCooldownMod());  
         }
         cdr = minCdr;

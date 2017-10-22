@@ -77,7 +77,7 @@ public class View extends javax.swing.JPanel {
     
     public View() throws RiotApiException {
         initComponents();
-        ApiConfig config = new ApiConfig().setKey("RGAPI-80e44638-93fe-4db5-b498-2bab841759ba");
+        ApiConfig config = new ApiConfig().setKey("RGAPI-7b393130-4f37-4583-9e5d-50cc59097cc2");
         api = new RiotApi(config);
         //System.out.println("Hey" + api.getSummonerByName(Platform.NA, "Dyrus").getAccountId()); //write code to test print here
         passiveCooldowns = assignCooldowns();
@@ -90,7 +90,7 @@ public class View extends javax.swing.JPanel {
         loading=false;
         height = this.getHeight();
         width = this.getWidth();
-        System.out.println(width);
+        //System.out.println(width);
         //LOLCooldownViewer.updateCache();
         version = ((List<String>) Cacher.read("cache/versions.ser")).get(0);
         System.out.println(version);
@@ -101,8 +101,8 @@ public class View extends javax.swing.JPanel {
             for(String id : rList.getData().keySet()){
             net.rithms.riot.api.endpoints.static_data.dto.Rune r = rList.getData().get(""+id);
             int count = 1;
-            System.out.println("Per Level: " + -100 * r.getStats().getPercentCooldownModPerLevel());
-           System.out.println("Flat cooldown: " + (-100 * count*r.getStats().getPercentCooldownMod()));  
+            //System.out.println("Per Level: " + -100 * r.getStats().getPercentCooldownModPerLevel());
+          // System.out.println("Flat cooldown: " + (-100 * count*r.getStats().getPercentCooldownMod()));  
         }
         
 //        Item ip = ImageHandler.parseItem(img2);
@@ -594,7 +594,7 @@ public class View extends javax.swing.JPanel {
     
     
     public void newScreenshot(){
-        System.out.println("new screenshot bby");
+        //System.out.println("new screenshot bby");
         int ctr = 1;
         for (Enemy e : enemies){
             List<Item> items = new ArrayList<>();
